@@ -40,7 +40,7 @@ class PreferenceNonParticipating(object):
         self._preferences = preferences
         print("\twith", preferences, "x preferences")
         
-def liquidate(self, common_outstanding, capital):
+    def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
         percent_ownership = float(common_if_converted) / common_outstanding
         total_invested = self.price * self.shares
@@ -171,114 +171,20 @@ class YouGotScrewedFunding(Funding,PreferenceParticipating,AntiDilutionFullRatch
 # or 18% of the sale due to their participating preferred.
 #
 
-import json
-
-@app.route('/funding')
-@payment.required(100)
-def get_equity():
-
-    #border = "------------------------------------------------"
-    #print(border)
-    #founders_shares = float(input("Enter the number of founder shares:\n"))
-    #option_pool = float(input("Enter the number of options in the pool:\n"))
-    #acquisition_price = float(input("Enter the acquisition price:\n"))
-    founders_shares = request.args.get('shares')
-    option_pool = request.args.get('pool')
-    price = request.args.get('price')
-
-    seriesB = SimpleFunding(name="Series B", price=2.00, shares=4000000, preferences=1)
-    newco = Company(outstanding_options=option_pool, founder_stock=founders_shares)
-    newco.investment(seriesB)
-    common_price = newco.price_per_share(acquisition_price=12.5)
-    number_common_shares = newco.common_outstanding_as_if_converted()
-    #print("number common shares", number_common_shares)
-    #print("founders own", round(float(founders_shares) / number_common_shares * 100), "percent of common stock.")
-    #print("common gets", common_price,"per share")
-    #print("founders get", round(float(common_price * founders_shares) / acquisition_price), "acquisition price.")
-    #print(border)
-    
-    acquisition_price = round(float(common_price * founders_shares)/acquisition_price)
-    founders_own = round(float(founders_shares)/number_common_shares * 100)
-
-    data = {
-        'number_of_common_shares': number_common_shares,
-        'common_price_per_share': common_price,
-        'acquisition_price': acquisition_price,
-        'founders_share_of_stock': founders_own,
-        'option_pool_size': option_pool,
-    }
-
-
-    response = json.dumps(data, indent=2)
-    return response    
-
-
-if __name__=='__main__':
-    app.run(host='0.0.0.0', debug=True)
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    """
-    border = "------------------------------------------------"
-    print(border)
-    founders_shares = float(input("Enter the number of founder shares:\n"))
-    option_pool = float(input("Enter the number of options in the pool:\n"))
-    acquisition_price = float(input("Enter the acquisition price:\n"))
-    seriesB = SimpleFunding(name="Series B", price=2.00, shares=4000000, preferences=1)
-    newco = Company(outstanding_options=option_pool, founder_stock=founders_shares)
-    newco.investment(seriesB)
-    common_price = newco.price_per_share(acquisition_price=acquisition_price)
-    number_common_shares = newco.common_outstanding_as_if_converted()
-    print("number common shares", number_common_shares)
-    print("founders own", round(float(founders_shares) / number_common_shares * 100), "percent of common stock")
-    print("common gets", common_price,"per share")
-    print("founders get", round(float(common_price * founders_shares) / acquisition_price * 100), "precent of acquisition price.")
-    print(border)
-    """
-#founders_shares = 2000000
-#option_pool = 2000000
-#acquisition_price = 30000000
-#seriesA = YouGotScrewedFunding(name="Series A", price=1.00, shares=2000000, preferences=2, cap=3)
-#seriesB = SimpleFunding(name="Series B", price=2.00, shares=4000000, preferences=1)
-#seriesC = SimpleFunding(name="Series C", price=4.00, shares=2500000, preferences=1)
-#newco = Company(outstanding_options=option_pool, founder_stock=founders_shares)
-#newco.investment(seriesA)
-#newco.investment(seriesB)
-#newco.investment(seriesC)
-#common_price = newco.price_per_share(acquisition_price=acquisition_price)
-#number_common_shares = newco.common_outstanding_as_if_converted()
-#print("number common shares", number_common_shares)
-#print("founders own", round(float(founders_shares) / number_common_shares * 100), "percent of common stock")
-#print("common gets", common_price,"per share")
-#print("founders get", round(float(common_price * founders_shares) / acquisition_price * 100), "precent of acquisition price")
+founders_shares = 2000000
+option_pool = 2000000
+acquisition_price = 30000000
+seriesA = YouGotScrewedFunding(name="Series A", price=1.00, shares=2000000, preferences=2, cap=3)
+seriesB = SimpleFunding(name="Series B", price=2.00, shares=4000000, preferences=1)
+seriesC = SimpleFunding(name="Series C", price=4.00, shares=2500000, preferences=1)
+newco = Company(outstanding_options=option_pool, founder_stock=founders_shares)
+newco.investment(seriesA)
+newco.investment(seriesB)
+newco.investment(seriesC)
+common_price = newco.price_per_share(acquisition_price=acquisition_price)
+number_common_shares = newco.common_outstanding_as_if_converted()
+print("number common shares", number_common_shares)
+print("founders own", round(float(founders_shares) / number_common_shares * 100), "percent of common stock")
+print("common gets", common_price,"per share")
+print("founders get", round(float(common_price * founders_shares) / acquisition_price * 100), "precent of acquisition price")
 
