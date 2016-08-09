@@ -40,7 +40,7 @@ class PreferenceNonParticipating(object):
         self._preferences = preferences
         print("\twith", preferences, "x preferences")
         
-TypeError: float() argument must be a string or a number, not 'NoneType'    def liquidate(self, common_outstanding, capital):
+def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
         percent_ownership = float(common_if_converted) / common_outstanding
         total_invested = self.price * self.shares
