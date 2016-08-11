@@ -192,23 +192,7 @@ import json
 @payment.required(1000)
 def get_equity():
     
-    
-    data = {
-        'founder_shares': founders_shares,
-        'options_pool_size': option_pool,
-        'acquisition_price': acquisition_price,
-        'price_per_share': common_price,
-        'number_of_shares': number_common_shares,
-        'percentage_founders_own': founders_own,
-        'percentage_founders_get': founders_get,
-        'series_b': newco.investment(seriesB)
-    }        
-  
-
-    response = json.dumps(data, indent=2)
-    print(newco.investment(seriesB))
-    return(response)
-    
+    return("\tNumber of common shares:\t%s\n\tFounders own: \t%s%s of common stock.\n\tCommon gets: \t%s%s per share.\n\tFounders get: %s%s of acquisition price." % (number_common_shares, founders_own, "%", "$", common_price, founders_get, "%"))
 
 
 if __name__=='__main__':
