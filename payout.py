@@ -50,7 +50,7 @@ class PreferenceNonParticipating(object):
             return (self.name, "opts to convert to", common_if_converted, "common shares")
             return 0.00, common_if_converted
         else:
-            #print(self.name, "opts to take preferred payment of", preferred_payout)
+            print(self.name, "opts to take preferred payment of", preferred_payout)
             return preferred_payout, 0
 
 class PreferenceParticipating(object):
@@ -69,10 +69,10 @@ class PreferenceParticipating(object):
         preference_payout = min(preference_payout, self.price * self._preferences_cap * self.shares)            
         common_payout = percent_ownership * capital
         if preference_payout > common_payout:
-            #print(self.name, "opts to take prefered payment of", preference_payout)
+            print(self.name, "opts to take prefered payment of", preference_payout)
             return preference_payout, 0
         else:
-            #print(self.name, "opts to convert to", common_if_converted, "common shares")
+            print(self.name, "opts to convert to", common_if_converted, "common shares")
             return 0.00, common_if_converted
 
 class AntiDilution(object):
@@ -113,8 +113,8 @@ class Company(object):
         self._capital.append(new_round)
 
     def price_per_share(self, acquisition_price):
-        #print("company acquired for", acquisition_price)
-        #print(self.outstanding_options, "outstanding options and", self.founder_stock, "shares of founder stock")
+        print("company acquired for", acquisition_price)
+        print(self.outstanding_options, "outstanding options and", self.founder_stock, "shares of founder stock")
         capital_remaining = float(acquisition_price)
         preferred_payments = 0
         common_to_be_paid = 0.00
@@ -200,11 +200,13 @@ def get_equity():
         'price_per_share': common_price,
         'number_of_shares': number_common_shares,
         'percentage_founders_own': founders_own,
-        'percentage_founders_get': founders_get
+        'percentage_founders_get': founders_get,
+        'series_b': newco.investment(seriesB)
     }        
   
 
     response = json.dumps(data, indent=2)
+    print(newco.investment(seriesB))
     return(response)
     
 
