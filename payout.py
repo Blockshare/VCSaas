@@ -33,12 +33,12 @@ class Funding(object):
         self.name = name
         self.price = price
         self.shares = shares
-        print("\n", name, "invests", self.price * self.shares, "at", self.price, "per share")
+        return ("\n", name, "invests", self.price * self.shares, "at", self.price, "per share")
 
 class PreferenceNonParticipating(object):
     def __init__(self, preferences):
         self._preferences = preferences
-        print("\twith", preferences, "x preferences")
+        return ("\twith", preferences, "x preferences")
         
     def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
@@ -47,17 +47,17 @@ class PreferenceNonParticipating(object):
         preferred_payout = min(total_invested * self._preferences, capital)
         common_payout = percent_ownership * capital
         if common_payout > preferred_payout:
-            print(self.name, "opts to convert to", common_if_converted, "common shares")
+            return (self.name, "opts to convert to", common_if_converted, "common shares")
             return 0.00, common_if_converted
         else:
-            print(self.name, "opts to take preferred payment of", preferred_payout)
+            #print(self.name, "opts to take preferred payment of", preferred_payout)
             return preferred_payout, 0
 
 class PreferenceParticipating(object):
     def __init__(self, preferences, cap):
         self._preferences = preferences
         self._preferences_cap = cap
-        print("\twith participating", preferences, "x preferences capped at ", cap, "x original per share price")
+        return ("\twith participating", preferences, "x preferences capped at ", cap, "x original per share price")
 
     def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
@@ -69,10 +69,10 @@ class PreferenceParticipating(object):
         preference_payout = min(preference_payout, self.price * self._preferences_cap * self.shares)            
         common_payout = percent_ownership * capital
         if preference_payout > common_payout:
-            print(self.name, "opts to take prefered payment of", preference_payout)
+            #print(self.name, "opts to take prefered payment of", preference_payout)
             return preference_payout, 0
         else:
-            print(self.name, "opts to convert to", common_if_converted, "common shares")
+            #print(self.name, "opts to convert to", common_if_converted, "common shares")
             return 0.00, common_if_converted
 
 class AntiDilution(object):
@@ -82,24 +82,24 @@ class AntiDilution(object):
 class AntiDilutionBroadWeighted(AntiDilution):
     def __init__(self, price):
         self._conversion_price = price
-        print("\twith broad-weighted anti-dilution provisions\n")
+        return ("\twith broad-weighted anti-dilution provisions\n")
         
     def trigger_anti_dilution(self, company, new_round):
         if self.price > new_round.price:
             outstanding = company.common_outstanding_as_if_converted()
             price_ratio = new_round.price / self.price
             self._conversion_price = self._conversion_price * (outstanding + new_round.shares * price_ratio) / (outstanding + new_round.shares)
-            print(self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
+            return (self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
 
 class AntiDilutionFullRatchet(AntiDilution):
     def __init__(self, price):
         self._conversion_price = price
-        print("\twith full-ratchet anti-dilution provisions\n")
+        return ("\twith full-ratchet anti-dilution provisions\n")
 
     def trigger_anti_dilution(self, company, new_round):
         if self.price > new_round.price:
             self._conversion_price = new_round.price
-            print(self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
+            return (self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
             
 class Company(object):
     def __init__(self, outstanding_options, founder_stock):
@@ -113,8 +113,8 @@ class Company(object):
         self._capital.append(new_round)
 
     def price_per_share(self, acquisition_price):
-        print("company acquired for", acquisition_price)
-        print(self.outstanding_options, "outstanding options and", self.founder_stock, "shares of founder stock")
+        #print("company acquired for", acquisition_price)
+        #print(self.outstanding_options, "outstanding options and", self.founder_stock, "shares of founder stock")
         capital_remaining = float(acquisition_price)
         preferred_payments = 0
         common_to_be_paid = 0.00
@@ -183,8 +183,31 @@ newco.investment(seriesB)
 newco.investment(seriesC)
 common_price = newco.price_per_share(acquisition_price=acquisition_price)
 number_common_shares = newco.common_outstanding_as_if_converted()
-print("number common shares", number_common_shares)
-print("founders own", round(float(founders_shares) / number_common_shares * 100), "percent of common stock")
-print("common gets", common_price,"per share")
-print("founders get", round(float(common_price * founders_shares) / acquisition_price * 100), "precent of acquisition price")
+founders_own = round(float(founders_shares) / number_common_shares * 100)
+founders_get = round(float(common_price * founders_shares) / acquisition_price * 100)
 
+import json
+
+@app.route('/funding')
+@payment.required(1000)
+def get_equity():
+    
+    
+    data = {
+        'founder_shares': founders_shares,
+        'options_pool_size': option_pool,
+        'acquisition_price': acquisition_price,
+        'price_per_share': common_price,
+        'number_of_shares': number_common_shares,
+        'percentage_founders_own': founders_own,
+        'percentage_founders_get': founders_get
+    }        
+  
+
+    response = json.dumps(data, indent=2)
+    return(response)
+    
+
+
+if __name__=='__main__':
+    app.run(host='0.0.0.0', debug=True)
