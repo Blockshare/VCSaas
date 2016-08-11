@@ -33,12 +33,12 @@ class Funding(object):
         self.name = name
         self.price = price
         self.shares = shares
-        return ("\n", name, "invests", self.price * self.shares, "at", self.price, "per share")
+        print("\n", name, "invests", self.price * self.shares, "at", self.price, "per share")
 
 class PreferenceNonParticipating(object):
     def __init__(self, preferences):
         self._preferences = preferences
-        return ("\twith", preferences, "x preferences")
+        print("\twith", preferences, "x preferences")
         
     def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
@@ -47,7 +47,7 @@ class PreferenceNonParticipating(object):
         preferred_payout = min(total_invested * self._preferences, capital)
         common_payout = percent_ownership * capital
         if common_payout > preferred_payout:
-            return (self.name, "opts to convert to", common_if_converted, "common shares")
+            print(self.name, "opts to convert to", common_if_converted, "common shares")
             return 0.00, common_if_converted
         else:
             print(self.name, "opts to take preferred payment of", preferred_payout)
@@ -57,7 +57,7 @@ class PreferenceParticipating(object):
     def __init__(self, preferences, cap):
         self._preferences = preferences
         self._preferences_cap = cap
-        return ("\twith participating", preferences, "x preferences capped at ", cap, "x original per share price")
+        print("\twith participating", preferences, "x preferences capped at ", cap, "x original per share price")
 
     def liquidate(self, common_outstanding, capital):
         common_if_converted = self.convert_to_common()
@@ -82,7 +82,7 @@ class AntiDilution(object):
 class AntiDilutionBroadWeighted(AntiDilution):
     def __init__(self, price):
         self._conversion_price = price
-        return ("\twith broad-weighted anti-dilution provisions\n")
+        print("\twith broad-weighted anti-dilution provisions\n")
         
     def trigger_anti_dilution(self, company, new_round):
         if self.price > new_round.price:
@@ -94,12 +94,12 @@ class AntiDilutionBroadWeighted(AntiDilution):
 class AntiDilutionFullRatchet(AntiDilution):
     def __init__(self, price):
         self._conversion_price = price
-        return ("\twith full-ratchet anti-dilution provisions\n")
+        print("\twith full-ratchet anti-dilution provisions\n")
 
     def trigger_anti_dilution(self, company, new_round):
         if self.price > new_round.price:
             self._conversion_price = new_round.price
-            return (self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
+            print(self.name, "anti-dilution provisions cause conversion price to adjust to ", self._conversion_price)
             
 class Company(object):
     def __init__(self, outstanding_options, founder_stock):
